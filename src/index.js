@@ -14,6 +14,7 @@ class Board extends React.Component {
   renderSquare(i) {
     return (
       <Square
+        key={i}
         value={this.props.squares[i]}
         onClick={() => this.props.onClick(i)}
       />
@@ -21,25 +22,19 @@ class Board extends React.Component {
   }
 
   render() {
-    return (
-      <div>
-        <div className="board-row">
-          {this.renderSquare(0)}
-          {this.renderSquare(1)}
-          {this.renderSquare(2)}
+    const colSquares = Array(3).fill(0);
+    const rowSquares = Array(3).fill(0);
+    const squares = rowSquares.map((row, i) => {
+      return (
+        <div className="board-row" key={i}>
+          {colSquares.map((col, j) => {
+            return this.renderSquare(i * 3 + j);
+          })}
         </div>
-        <div className="board-row">
-          {this.renderSquare(3)}
-          {this.renderSquare(4)}
-          {this.renderSquare(5)}
-        </div>
-        <div className="board-row">
-          {this.renderSquare(6)}
-          {this.renderSquare(7)}
-          {this.renderSquare(8)}
-        </div>
-      </div>
-    );
+      );
+    });
+
+    return <div>{squares}</div>;
   }
 }
 
@@ -91,13 +86,19 @@ class Game extends React.Component {
     const history = this.state.history;
     const current = history[this.state.stepNumber];
     const winner = calculateWinner(current.squares);
+    console.log(history);
     const moves = history.map((step, move) => {
       const desc = move
         ? "Go to move #" + move + "(" + step.col + "," + step.row + ")"
         : "Go to game start";
       return (
         <li key={move}>
-          <button onClick={() => this.jumpTo(move)}>{desc}</button>
+          <button
+            className={this.state.stepNumber === move ? "bold" : ""}
+            onClick={() => this.jumpTo(move)}
+          >
+            {desc}
+          </button>
         </li>
       );
     });
